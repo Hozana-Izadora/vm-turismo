@@ -1,0 +1,46 @@
+{
+  "name": "desafio-ceara",
+  "productName": "Desafio Ceará",
+  "version": "1.0.0",
+  "description": "Quiz Desafio Ceará — VM Turismo & Receptivo · BTM 2026 (totem offline)",
+  "author": "VM Turismo & Receptivo",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "node scripts/iniciar.js",
+    "dev": "node scripts/iniciar.js --dev",
+    "dist": "electron-builder --win portable",
+    "dist:instalador": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "br.com.vmturismo.desafioceara",
+    "productName": "Desafio Ceará",
+    "artifactName": "DesafioCeara-${version}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*",
+      "app/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.png",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "DesafioCeara-portatil.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "DesafioCeara-instalador.exe"
+    }
+  },
+  "devDependencies": {
+    "@fontsource-variable/montserrat": "^5.3.0",
+    "electron": "^44.8.0",
+    "electron-builder": "^26.15.3"
+  }
+}
