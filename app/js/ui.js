@@ -7,7 +7,9 @@
     palmeira: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8c0-2.8-2.2-5-5-5H6"/><path d="M13 7.1A5 5 0 0 1 21 7h-3.5"/><path d="M5.9 11.5A5 5 0 0 1 13 8c.3 2.1-.5 4-2 5.3"/><path d="M10 22c.5-3 .5-7 3-14 1.2 2 2.5 4.8 2.5 7.5"/><path d="M4 22h16"/></svg>',
     certo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
     errado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
-    relogio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+    relogio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    olho: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    olhoFechado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c6.5 0 10 8 10 8a17.6 17.6 0 0 1-2.2 3.2M6.6 6.6A17.5 17.5 0 0 0 2 12s3.5 8 10 8a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M2 2l20 20"/></svg>'
   };
 
   function icone(nome) {
@@ -159,6 +161,39 @@
     const cv = document.getElementById("confete");
     cv.getContext("2d").clearRect(0, 0, cv.width, cv.height);
   }
+
+  // ---------- Mostrar/esconder senha ----------
+  // Todo campo de senha (inclusive os criados depois, em janelas e no painel) ganha um botão de olho.
+  function prepararSenha(input) {
+    if (input.dataset.olho) return;
+    input.dataset.olho = "1";
+    const caixa = document.createElement("span");
+    caixa.className = "senha-caixa";
+    input.parentNode.insertBefore(caixa, input);
+    caixa.appendChild(input);
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.tabIndex = -1;
+    botao.className = "btn-olho";
+    const atualizar = () => {
+      const visivel = input.type === "text";
+      botao.innerHTML = icone(visivel ? "olhoFechado" : "olho");
+      botao.setAttribute("aria-label", visivel ? "Esconder senha" : "Mostrar senha");
+    };
+    // não tira o foco do campo (o teclado da tela continua aberto)
+    botao.addEventListener("pointerdown", (e) => e.preventDefault());
+    botao.addEventListener("mousedown", (e) => e.preventDefault());
+    botao.addEventListener("click", (e) => {
+      e.preventDefault();
+      input.type = input.type === "password" ? "text" : "password";
+      atualizar();
+    });
+    atualizar();
+    caixa.appendChild(botao);
+  }
+  const prepararSenhas = () => document.querySelectorAll('input[type="password"]:not([data-olho])').forEach(prepararSenha);
+  new MutationObserver(prepararSenhas).observe(document.body, { childList: true, subtree: true });
+  prepararSenhas();
 
   window.UI = { ICONES, icone, Modal, toast, Som, confete, pararConfete };
 })();

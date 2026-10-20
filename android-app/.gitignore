@@ -1,0 +1,7 @@
+node_modules/
+# gerado a partir de ../app por scripts/preparar-www.js
+www/
+# APKs gerados
+dist/
+# chave de assinatura: NUNCA versionar; guarde uma cópia em local seguro
+assinatura/

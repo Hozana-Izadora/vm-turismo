@@ -30,7 +30,25 @@ Para iniciar junto com o Windows, coloque um atalho do `.exe` em `shell:startup`
 
 Se preferir um instalador com atalho no menu Iniciar, gere com `npm run dist:instalador`.
 
-### Totem com Android, ou equipamento onde não dá para instalar nada
+### Tablet ou celular Android (Android 5.1 ou mais novo)
+Mesmas telas, regras, perguntas e painel da versão Windows. Em celulares, o quiz fica em escala menor
+para a pergunta e as alternativas caberem sem rolar.
+
+1. Envie `android-app/dist/DesafioCeara.apk` (cerca de 4 MB) para o aparelho: WhatsApp, Google Drive, e-mail ou cabo USB.
+2. Toque no arquivo para instalar. O Android vai pedir para **permitir a instalação de apps desta fonte**:
+   permita. Se o Play Protect avisar que o app é desconhecido, toque em **Instalar mesmo assim**.
+3. Abra o app **Desafio Ceará**. Ele ocupa a tela inteira, mantém a tela acesa e o botão "voltar" não sai do quiz.
+4. Para travar o aparelho no quiz, ative a **Fixação de apps** (Configurações › Segurança › Fixar app) e fixe o
+   Desafio Ceará. Para soltar: segure Voltar + Visão geral (ou o gesto indicado pelo aparelho).
+
+Dados: ficam guardados dentro do app (com gravação segura) e, como cópia, em
+**Documentos › Desafio Ceará BTM 2026 › participantes.csv**, visível no app Arquivos. No painel, *Exportar CSV (Excel)*
+salva a planilha nessa pasta e abre o **Compartilhar** do Android (Drive, WhatsApp, e-mail, pendrive).
+Desinstalar o app apaga os dados internos: exporte antes.
+
+Cada aparelho tem a sua própria base: o estoque de brindes e a regra "um WhatsApp joga uma vez" valem por aparelho.
+
+### Equipamento onde não dá para instalar nada
 Copie a pasta `app/` para o equipamento e abra `app/index.html` no **Chrome**, em tela cheia.
 Nesse modo os dados ficam no armazenamento do navegador. Por isso:
 - **exporte o CSV com frequência** (painel → Dados e configurações);
@@ -51,13 +69,23 @@ Nesse modo os dados ficam no armazenamento do navegador. Por isso:
 - **Pelo painel:** aba *Participantes* → busque pelo nome, telefone ou código (ex.: `42`) → *Marcar entregue*.
 
 ### Painel administrativo
-- **Resumo:** cadastros, média de acertos, brindes entregues e aguardando entrega, estoque por faixa,
+- **Resumo:** participantes, média de acertos, brindes entregues e aguardando entrega, estoque por faixa,
   participantes por dia, distribuição de acertos e taxa de acerto de cada pergunta.
 - **Participantes:** busca, filtros, entrega, desfazer entrega e liberar nova tentativa.
 - **Ranking:** top 50 por pontos e, no empate, pelo menor tempo.
 - **Prêmios:** nome e quantidade total de cada faixa.
 - **Dados e configurações:** exportar CSV, fazer backup, abrir a pasta, ligar ou desligar os sons e o teclado virtual,
   ajustar o tempo por pergunta e a inatividade, trocar a senha e o PIN, e fechar o app.
+
+### Quiz sem formulário de dados
+Em *Dados e configurações → Opções do quiz*, desmarque **Formulário de dados antes do quiz** e toque em
+**Salvar opções**. A partir daí, tocar na tela inicial leva direto às perguntas, sem pedir nome, WhatsApp e e-mail.
+- Os brindes continuam valendo, com código e confirmação de entrega pelo PIN.
+- O participante aparece como **Sem cadastro** no painel e no CSV.
+- Sem WhatsApp, não há como impedir que a mesma pessoa jogue de novo.
+- Se ninguém responder nenhuma pergunta (por exemplo, um toque sem querer na tela inicial), a partida não ganha
+  brinde, fica como *Incompleto* e o quiz volta à tela inicial.
+- Marque a opção de novo para voltar a pedir os dados. As partidas já feitas continuam registradas.
 
 ### Zerar participantes (escondido de propósito)
 Para evitar que alguém apague os dados sem querer, não há botão visível.
@@ -110,7 +138,8 @@ O sorteio evita colocar na mesma rodada perguntas com a mesma resposta, ou em qu
 entrega a resposta de outra (ex.: "Em qual município fica a Praia de Morro Branco?" e
 "Qual praia é famosa pelo labirinto de falésias?").
 
-Depois de alterar arquivos em `app/`, gere o executável de novo (`npm run dist`).
+Depois de alterar arquivos em `app/`, gere o executável de novo (`npm run dist`) e, se usar a versão Android,
+o APK também (`cd android-app && npm run apk`).
 
 ---
 
@@ -137,6 +166,26 @@ npm run dev                # abre em janela, com DevTools
 npm run dist               # gera dist/DesafioCeara-portatil.exe
 npm run dist:instalador    # gera dist/DesafioCeara-instalador.exe
 ```
+
+### Versão Android (`android-app/`)
+
+Empacota o mesmo `app/` com [Capacitor 6](https://capacitorjs.com/). Nada do Windows é alterado: `scripts/preparar-www.js`
+copia `app/` para `android-app/www` e acrescenta só `src/android.js` (armazenamento no aparelho, com a mesma
+interface de `electron/preload.js`) e `src/android.css` (esconde "Abrir pasta" e ajusta a escala em celulares).
+O modo quiosque (tela cheia, tela acesa) está em `android/app/src/main/java/.../MainActivity.java`.
+
+Requisitos: Android SDK (API 34) e JDK 17, como os do Android Studio. O script acha os dois sozinho, ou use `JAVA_HOME` e `ANDROID_HOME`.
+
+```bash
+cd android-app
+npm install
+npm run apk          # gera dist/DesafioCeara.apk (assinado, para entregar)
+npm run apk:teste    # gera dist/DesafioCeara-teste.apk (permite inspecionar o WebView pelo chrome://inspect)
+```
+
+> ⚠️ **Chave de assinatura:** `android-app/assinatura/` (fora do git) guarda a chave e a senha do APK.
+> **Faça uma cópia em local seguro.** Sem ela, uma nova versão não instala por cima da antiga: seria preciso
+> desinstalar o app, o que apaga os dados do aparelho.
 
 Estrutura:
 

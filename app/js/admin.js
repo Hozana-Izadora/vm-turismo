@@ -30,7 +30,7 @@
     const optIn = todos.filter((p) => p.aceitaComunicacoes).length;
 
     const cards = [
-      [todos.length, "Cadastros"],
+      [todos.length, "Participantes"],
       [conc.length, "Quizzes concluídos"],
       [pct(totalAcertos, totalPerguntas), "Média de acertos"],
       [entregues, "Brindes entregues"],
@@ -107,12 +107,14 @@
         ? `<span class="tag tag-ok">Entregue ${U.horaBR(p.entregueEm).slice(0, 5)}</span>
            <button type="button" class="btn-mini" data-acao="desfazer" data-id="${p.id}">Desfazer</button>`
         : `<button type="button" class="btn-mini btn-mini-principal" data-acao="entregar" data-id="${p.id}">Marcar entregue</button>`;
-      const liberar = p.liberadoNovaTentativa
+      const liberar = p.semCadastro ? ""
+        : p.liberadoNovaTentativa
         ? `<span class="tag">Nova tentativa liberada</span>`
         : `<button type="button" class="btn-mini" data-acao="liberar" data-id="${p.id}">Liberar nova tentativa</button>`;
       return `<tr>
         <td><strong>${U.codigo(p.codigo)}</strong></td>
-        <td><strong>${esc(p.nome)}</strong><br><small>${esc(U.formatarTelefone(p.telefone))} · ${esc(p.email)}${p.empresa ? " · " + esc(p.empresa) : ""}</small></td>
+        <td>${p.semCadastro ? `<span class="tag">Sem cadastro</span>`
+          : `<strong>${esc(p.nome)}</strong><br><small>${esc(U.formatarTelefone(p.telefone))} · ${esc(p.email)}${p.empresa ? " · " + esc(p.empresa) : ""}</small>`}</td>
         <td>${U.dataBR(p.criadoEm)}<br><small>${U.horaBR(p.criadoEm)}</small></td>
         <td>${p.status === "concluido" ? `${p.acertos}/${p.perguntas.length}<br><small>${p.pontos} pts · ${U.segundos(p.tempoTotalMs)} s</small>` : `<span class="tag tag-alerta">${STATUS[p.status] || p.status}</span>`}</td>
         <td>${premio}</td>
@@ -151,7 +153,7 @@
   function abaRanking() {
     const lista = concluidos().slice().sort((a, b) => b.pontos - a.pontos || a.tempoTotalMs - b.tempoTotalMs).slice(0, 50);
     const linhas = lista.map((p, i) => `<tr class="${i < 3 ? "podio podio-" + (i + 1) : ""}">
-      <td><strong>${i + 1}º</strong></td><td><strong>${esc(p.nome)}</strong>${p.empresa ? `<br><small>${esc(p.empresa)}</small>` : ""}</td>
+      <td><strong>${i + 1}º</strong></td><td><strong>${p.semCadastro ? "Sem cadastro" : esc(p.nome)}</strong>${p.empresa ? `<br><small>${esc(p.empresa)}</small>` : ""}</td>
       <td>${p.acertos}/${p.perguntas.length}</td><td>${p.pontos}</td><td>${U.segundos(p.tempoTotalMs)} s</td>
       <td>${U.codigo(p.codigo)}</td><td>${U.dataBR(p.criadoEm)} ${U.horaBR(p.criadoEm).slice(0, 5)}</td></tr>`).join("")
       || `<tr><td colspan="7" class="vazio">Nenhum quiz concluído ainda.</td></tr>`;
@@ -223,7 +225,8 @@
           </div>
         </div>
         <div class="painel"><h3>Opções do quiz</h3>
-          ${toggle("cfg-som", "Sons de acerto, erro e comemoração", c.som)}
+          ${toggle("cfg-formulario", "Formulário de dados antes do quiz (desative para ir direto às perguntas, sem coletar nome, WhatsApp e e-mail)", c.formularioDados)}
+          ${toggle("cfg-som","Sons de acerto, erro e comemoração", c.som)}
           ${toggle("cfg-teclado", "Teclado virtual na tela (desative se o equipamento tiver teclado próprio)", c.tecladoVirtual)}
           <div class="linha-campos">
             <label class="campo campo-curto"><span>Segundos por pergunta</span>
@@ -267,6 +270,7 @@
     if (!(tempo >= 5 && tempo <= 60)) { toast("Tempo por pergunta: entre 5 e 60 segundos.", "erro"); return; }
     if (!(ina >= 20 && ina <= 600)) { toast("Inatividade: entre 20 e 600 segundos.", "erro"); return; }
     Object.assign(Store.config, {
+      formularioDados: $("cfg-formulario").checked,
       som: $("cfg-som").checked,
       tecladoVirtual: $("cfg-teclado").checked,
       tempoPergunta: tempo,
