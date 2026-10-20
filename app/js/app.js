@@ -29,6 +29,7 @@
   function irPara(tela) {
     document.querySelectorAll(".tela").forEach((s) => s.classList.toggle("ativa", s.id === "tela-" + tela));
     document.documentElement.dataset.tela = tela;
+    document.documentElement.toggleAttribute("data-sem-formulario", !Store.config.formularioDados);
     estado.tela = tela;
     estado.ultimoToque = Date.now();
     window.Teclado.fechar();
@@ -175,6 +176,19 @@
       return;
     }
 
+    await comecarParticipante(dados);
+  }
+
+  // Sem o formulário de dados (opção do painel): o quiz começa direto, sem dados pessoais
+  function comecarSemCadastro() {
+    if (estado.participante) return; // segundo toque enquanto o quiz ainda está abrindo
+    return comecarParticipante({
+      nome: "", telefone: "", email: "", empresa: "",
+      consentimento: false, aceitaComunicacoes: false, semCadastro: true
+    });
+  }
+
+  async function comecarParticipante(dados) {
     const participante = Object.assign({
       id: U.uuid(),
       codigo: Store.proximoCodigo(),
@@ -192,13 +206,13 @@
     }, dados);
 
     Store.participantes.push(participante);
+    estado.participante = participante;
     try {
       await Store.salvarParticipantes();
     } catch (err) {
       console.error(err);
       toast("Atenção: falha ao gravar os dados. Chame a equipe.", "erro");
     }
-    estado.participante = participante;
     iniciarQuiz();
   }
 
@@ -305,7 +319,15 @@
     p.pontos = p.acertos * Store.config.pontosPorAcerto;
     p.tempoTotalMs = p.perguntas.reduce((s, q) => s + q.tempoMs, 0);
     p.finalizadoEm = new Date().toISOString();
-    const r = window.Premios.atribuir(p.acertos, Store.config.premios, Store.participantes.filter((x) => x !== p));
+    // Sem formulário, um toque acidental na tela inicial começa um quiz. Se ninguém respondeu nada,
+    // não conta como participação nem gasta brinde do estoque.
+    if (p.semCadastro && p.perguntas.every((q) => q.resposta == null)) {
+      p.status = "incompleto";
+      try { await Store.salvarParticipantes(); } catch (err) { console.error(err); }
+      voltarAoInicio();
+      return;
+    }
+    const r =window.Premios.atribuir(p.acertos, Store.config.premios, Store.participantes.filter((x) => x !== p));
     p.premioId = r.premio ? r.premio.id : null;
     p.premioNome = r.premio ? r.premio.nome : null;
     p.status = "concluido";
@@ -322,10 +344,11 @@
   function mostrarResultado(r) {
     const p = estado.participante;
     const total = p.perguntas.length;
-    const nome = U.escapeHtml(U.primeiroNome(p.nome));
-    const titulo = p.acertos === total ? `Incrível, ${nome}! Você é expert no Ceará!`
-      : p.acertos >= 3 ? `Muito bem, ${nome}!`
-        : `Valeu pela participação, ${nome}!`;
+    const primeiro = U.primeiroNome(p.nome);
+    const nome = primeiro ? ", " + U.escapeHtml(primeiro) : "";
+    const titulo = p.acertos === total ? `Incrível${nome}! Você é expert no Ceará!`
+      : p.acertos >= 3 ? `Muito bem${nome}!`
+        : `Valeu pela participação${nome}!`;
     $("res-titulo").innerHTML = titulo;
     $("res-acertos").textContent = `${p.acertos}/${total}`;
     $("res-pontos").textContent = p.pontos;
@@ -395,7 +418,7 @@
     };
     Modal.abrir({
       titulo: "Confirmar entrega do brinde",
-      html: `<p><strong>${U.escapeHtml(p.premioNome)}</strong> para ${U.escapeHtml(p.nome)} (${U.codigo(p.codigo)})</p>
+      html: `<p><strong>${U.escapeHtml(p.premioNome)}</strong> para ${p.nome ? U.escapeHtml(p.nome) + " " : "o participante "}(${U.codigo(p.codigo)})</p>
         <label class="campo"><span>PIN da equipe</span>
         <input id="pin-equipe" type="password" maxlength="8" data-teclado="numero" autocomplete="off"></label>
         <small class="erro" id="pin-erro"></small>`,
@@ -464,7 +487,8 @@
     $("tela-inicio").addEventListener("click", (e) => {
       if (e.target.closest("#logo-admin")) return;
       Som.tocar("toque");
-      irPara("cadastro");
+      if (Store.config.formularioDados) irPara("cadastro");
+      else comecarSemCadastro();
     });
     $("logo-admin").addEventListener("click", tocarLogo);
     $("form-cadastro").addEventListener("submit", enviarCadastro);

@@ -1,0 +1,9 @@
+{
+  "appId": "br.com.vmturismo.desafioceara",
+  "appName": "Desafio Ceará",
+  "webDir": "www",
+  "backgroundColor": "#06344a",
+  "android": {
+    "allowMixedContent": false
+  }
+}

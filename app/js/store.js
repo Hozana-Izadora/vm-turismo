@@ -14,6 +14,7 @@
     tempoPergunta: 15,
     pontosPorAcerto: 100,
     inatividadeSeg: 60,
+    formularioDados: true,
     som: true,
     tecladoVirtual: true,
     premios: [

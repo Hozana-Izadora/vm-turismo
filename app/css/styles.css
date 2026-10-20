@@ -216,6 +216,7 @@ html[data-tela="admin"] .cena { display: none; }
 }
 .etapas li.atual { background: var(--amarelo); color: var(--oceano); }
 .etapas li.feito { background: rgba(19, 181, 193, 0.5); color: #fff; }
+html[data-sem-formulario] .etapa-cadastro { display: none; }
 
 /* ---------------- Cartões / formulário ---------------- */
 .cartao {
@@ -252,6 +253,31 @@ html[data-tela="admin"] .cena { display: none; }
 .campo input::placeholder { color: #9db2c0; font-weight: 500; }
 .campo input:focus { border-color: var(--turquesa); box-shadow: 0 0 0 0.3rem rgba(19, 181, 193, 0.2); background: #fff; }
 .campo.invalido input { border-color: var(--erro); background: var(--erro-claro); }
+/* campo de senha com botão de olho (mostrar/esconder) */
+.senha-caixa, .campo > .senha-caixa {
+  position: relative;
+  display: block;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+.senha-caixa input { padding-right: 3.6rem; }
+.btn-olho {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  width: 2.9rem;
+  height: 2.9rem;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--texto-suave);
+}
+.btn-olho:active { background: var(--turquesa-claro); }
+.btn-olho .icone { width: 1.5rem; height: 1.5rem; }
 .erro { display: block; color: var(--erro); font-size: 0.85rem; font-weight: 700; margin-top: 0.3rem; min-height: 0; }
 .erro:empty { display: none; }
 

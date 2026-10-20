@@ -1,0 +1,44 @@
+/* Ajustes exclusivos da versão Android. O visual e as regras vêm de ../app (iguais ao Windows). */
+
+/* "Abrir pasta" não existe no Android: a planilha é salva em Documentos e enviada pelo Compartilhar */
+#btn-pasta { display: none !important; }
+
+/* Celulares (tela estreita): mesmo visual, em escala menor, para pergunta e alternativas caberem sem rolar */
+@media (max-width: 600px) {
+  .tela { padding: 0.8rem 0.7rem calc(var(--altura-teclado) + 0.8rem); }
+  .topo { margin-bottom: 0.6rem; }
+  .logo-topo { height: 2.2rem; }
+  .cartao { padding: 1.1rem; border-radius: 1.2rem; }
+  .cartao-cabecalho h2 { font-size: 1.35rem; }
+  .campo input { height: 3rem; font-size: 1.1rem; }
+  .btn { min-height: 3.2rem; font-size: 1.05rem; }
+  .btn-pulsar { min-height: 3.8rem; padding: 0 1.4rem; font-size: 1.2rem; }
+
+  .tela-inicio { gap: 0.6rem; }
+  .logo-inicio { height: clamp(5rem, 17vh, 10rem); }
+  .titulo-desafio { font-size: 2.4rem; }
+  .subtitulo { font-size: 1.15rem; }
+  .faixas-inicio { gap: 0.45rem; }
+  .faixa-chip { padding: 0.4rem 0.9rem 0.4rem 0.5rem; }
+  .faixa-chip .icone { width: 1.9rem; height: 1.9rem; padding: 0.35rem; }
+  .rodape-inicio { font-size: 0.95rem; }
+
+  .cronometro { width: 4.2rem; height: 4.2rem; }
+  .cronometro span { font-size: 1.5rem; }
+  .progresso { margin-top: 0.8rem; }
+  .pergunta { font-size: 1.2rem; line-height: 1.3; margin: 0.8rem 0 1rem; min-height: 0; }
+  .alternativas { gap: 0.6rem; }
+  .alternativa { min-height: 3.4rem; padding: 0.55rem 0.8rem; gap: 0.7rem; font-size: 1.05rem; }
+  .letra { width: 2.2rem; height: 2.2rem; }
+  .feedback { margin-top: 0.8rem; padding: 0.7rem; font-size: 1.15rem; }
+
+  .resultado-titulo { font-size: 1.45rem; }
+  .placar { margin: 1rem 0 0.7rem; gap: 0.5rem; }
+  .placar-item { padding: 0.7rem 0.3rem; }
+  .placar-item strong { font-size: 1.7rem; }
+  .bolinhas { margin-bottom: 1rem; }
+  .bolinhas span { width: 2.1rem; height: 2.1rem; }
+  .premio { padding: 1rem; gap: 0.6rem; }
+  .premio-icone .icone { width: 3rem; height: 3rem; padding: 0.6rem; }
+  .premio-info strong { font-size: 1.35rem; }
+}

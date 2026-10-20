@@ -1,0 +1,22 @@
+{
+  "name": "desafio-ceara-android",
+  "productName": "Desafio Ceará (Android)",
+  "version": "1.0.0",
+  "description": "Versão Android (tablets e celulares) do Desafio Ceará — mesmo app de ../app, empacotado com Capacitor",
+  "private": true,
+  "scripts": {
+    "preparar": "node scripts/preparar-www.js && npx cap sync android",
+    "apk": "npm run preparar && node scripts/gerar-apk.js release",
+    "apk:teste": "npm run preparar && node scripts/gerar-apk.js debug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.2",
+    "@capacitor/app": "^6.0.3",
+    "@capacitor/core": "^6.2.2",
+    "@capacitor/filesystem": "^6.0.4",
+    "@capacitor/share": "^6.0.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.2"
+  }
+}
